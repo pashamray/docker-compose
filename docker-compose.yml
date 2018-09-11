@@ -3,10 +3,9 @@ services:
   web:
     build: nginx
     volumes:
-        - ../site:/var/www/site
+        - ${SITE_DIR}:/var/www/${SITE_NAME}
         - ./data/var/log/nginx:/var/log/nginx
-        - ./data/var/log/nginx/site:/var/log/nginx/site
-#        - ./nginx/ssl:/etc/nginx/ssl
+        - ./data/var/log/nginx/${SITE_NAME}:/var/log/nginx/${SITE_NAME}
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro
     ports:
@@ -21,21 +20,19 @@ services:
   php:
     build: php-fpm
     volumes:
-        - ../site:/var/www/site
+        - ${SITE_DIR}:/var/www/${SITE_NAME}
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro
     environment:
-        XDEBUG_CONFIG: remote_host=10.254.254.254
+        XDEBUG_CONFIG: remote_host=${XDEBUG_REMOTE_HOST}
     depends_on:
       - mysql
-    dns: 8.8.8.8
     networks:
       - backend
       - frontend
 
   adminer:
     build: adminer
-    restart: always
     ports:
       - 8080:8080
     depends_on:
@@ -47,21 +44,18 @@ services:
   mysql:
     build: mysql
     volumes:
-      - ./data/mysql:/var/lib/mysql # сохранение файлов БД на хосте
-    restart: always
+      - ./data/mysql:/var/lib/mysql # save db files on host mashine
     ports:
       - 3306:3306
     environment:
-      MYSQL_ROOT_PASSWORD: toor
-      MYSQL_DATABASE: site
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASS}
+      MYSQL_DATABASE: ${MYSQL_DB}
     networks:
       - backend
       - frontend
 
   rabbitmq:
     build: rabbitmq
-    restart: always
-    #command: "rabbitmq-plugins enable rabbitmq_management"
     networks:
       - backend
       - frontend
@@ -71,12 +65,11 @@ services:
       - 5672:5672
       - 15672:15672
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
 
   redis:
     build: redis
-    restart: always
     volumes:
      - ./data/redis:/data
     ports:
@@ -88,5 +81,5 @@ services:
 networks:
   frontend:
     external:
-      name: frontend-site
+      name: frontend-${SITE_NAME}
   backend:
