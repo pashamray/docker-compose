@@ -4,10 +4,17 @@ services:
     build: nginx
     volumes:
         - ${SITE_DIR}:/var/www/${SITE_NAME}
+        - ./nginx/frontend.template:/etc/nginx/conf.d/frontend.template
         - ./data/var/log/nginx:/var/log/nginx
         - ./data/var/log/nginx/${SITE_NAME}:/var/log/nginx/${SITE_NAME}
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro
+    environment:
+      - SITE_NAME=${SITE_NAME}
+      - FRONTEND_DIR=${FRONTEND_DIR}
+      - FRONTEND_HOST=${FRONTEND_HOST}
+      - FRONTEND_PORT=${FRONTEND_PORT}
+    command: /bin/bash -c "envsubst \"`env | awk -F = '{printf \" $$%s\", $$1}'`\" < /etc/nginx/conf.d/frontend.template > /etc/nginx/conf.d/site.conf && exec nginx -g 'daemon off;'"
     ports:
         - 80:80
 #        - 443:443

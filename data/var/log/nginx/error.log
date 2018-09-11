@@ -1,1 +1,5 @@
 
+2018/09/11 11:18:35 [emerg] 1#1: invalid number of arguments in "server_name" directive in /etc/nginx/conf.d/site.conf:13
+2018/09/11 11:22:15 [emerg] 1#1: invalid number of arguments in "fastcgi_param" directive in /etc/nginx/conf.d/site.conf:38
+2018/09/11 11:26:24 [emerg] 1#1: invalid number of arguments in "fastcgi_param" directive in /etc/nginx/conf.d/site.conf:38
+2018/09/11 11:45:09 [emerg] 1#1: invalid number of arguments in "fastcgi_param" directive in /etc/nginx/conf.d/site.conf:38
